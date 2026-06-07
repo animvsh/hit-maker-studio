@@ -9,38 +9,212 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BeevrRouteImport } from './routes/beevr'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as BeevrOnboardingRouteImport } from './routes/beevr.onboarding'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppProjectsRouteImport } from './routes/app.projects'
+import { Route as AppKnowledgeRouteImport } from './routes/app.knowledge'
+import { Route as AppInboxRouteImport } from './routes/app.inbox'
+import { Route as AppEmployeesRouteImport } from './routes/app.employees'
+import { Route as AppCallRouteImport } from './routes/app.call'
+import { Route as AppApprovalsRouteImport } from './routes/app.approvals'
+import { Route as AppActivityRouteImport } from './routes/app.activity'
+import { Route as AppProjectsIdRouteImport } from './routes/app.projects.$id'
 
+const BeevrRoute = BeevrRouteImport.update({
+  id: '/beevr',
+  path: '/beevr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const BeevrOnboardingRoute = BeevrOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => BeevrRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsRoute = AppProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKnowledgeRoute = AppKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInboxRoute = AppInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployeesRoute = AppEmployeesRouteImport.update({
+  id: '/employees',
+  path: '/employees',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCallRoute = AppCallRouteImport.update({
+  id: '/call',
+  path: '/call',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApprovalsRoute = AppApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppActivityRoute = AppActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsIdRoute = AppProjectsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppProjectsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/beevr': typeof BeevrRouteWithChildren
+  '/app/activity': typeof AppActivityRoute
+  '/app/approvals': typeof AppApprovalsRoute
+  '/app/call': typeof AppCallRoute
+  '/app/employees': typeof AppEmployeesRoute
+  '/app/inbox': typeof AppInboxRoute
+  '/app/knowledge': typeof AppKnowledgeRoute
+  '/app/projects': typeof AppProjectsRouteWithChildren
+  '/app/settings': typeof AppSettingsRoute
+  '/beevr/onboarding': typeof BeevrOnboardingRoute
+  '/app/': typeof AppIndexRoute
+  '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/beevr': typeof BeevrRouteWithChildren
+  '/app/activity': typeof AppActivityRoute
+  '/app/approvals': typeof AppApprovalsRoute
+  '/app/call': typeof AppCallRoute
+  '/app/employees': typeof AppEmployeesRoute
+  '/app/inbox': typeof AppInboxRoute
+  '/app/knowledge': typeof AppKnowledgeRoute
+  '/app/projects': typeof AppProjectsRouteWithChildren
+  '/app/settings': typeof AppSettingsRoute
+  '/beevr/onboarding': typeof BeevrOnboardingRoute
+  '/app': typeof AppIndexRoute
+  '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/beevr': typeof BeevrRouteWithChildren
+  '/app/activity': typeof AppActivityRoute
+  '/app/approvals': typeof AppApprovalsRoute
+  '/app/call': typeof AppCallRoute
+  '/app/employees': typeof AppEmployeesRoute
+  '/app/inbox': typeof AppInboxRoute
+  '/app/knowledge': typeof AppKnowledgeRoute
+  '/app/projects': typeof AppProjectsRouteWithChildren
+  '/app/settings': typeof AppSettingsRoute
+  '/beevr/onboarding': typeof BeevrOnboardingRoute
+  '/app/': typeof AppIndexRoute
+  '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/beevr'
+    | '/app/activity'
+    | '/app/approvals'
+    | '/app/call'
+    | '/app/employees'
+    | '/app/inbox'
+    | '/app/knowledge'
+    | '/app/projects'
+    | '/app/settings'
+    | '/beevr/onboarding'
+    | '/app/'
+    | '/app/projects/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/beevr'
+    | '/app/activity'
+    | '/app/approvals'
+    | '/app/call'
+    | '/app/employees'
+    | '/app/inbox'
+    | '/app/knowledge'
+    | '/app/projects'
+    | '/app/settings'
+    | '/beevr/onboarding'
+    | '/app'
+    | '/app/projects/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/beevr'
+    | '/app/activity'
+    | '/app/approvals'
+    | '/app/call'
+    | '/app/employees'
+    | '/app/inbox'
+    | '/app/knowledge'
+    | '/app/projects'
+    | '/app/settings'
+    | '/beevr/onboarding'
+    | '/app/'
+    | '/app/projects/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  BeevrRoute: typeof BeevrRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/beevr': {
+      id: '/beevr'
+      path: '/beevr'
+      fullPath: '/beevr'
+      preLoaderRoute: typeof BeevrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +222,138 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/beevr/onboarding': {
+      id: '/beevr/onboarding'
+      path: '/onboarding'
+      fullPath: '/beevr/onboarding'
+      preLoaderRoute: typeof BeevrOnboardingRouteImport
+      parentRoute: typeof BeevrRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/projects': {
+      id: '/app/projects'
+      path: '/projects'
+      fullPath: '/app/projects'
+      preLoaderRoute: typeof AppProjectsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/knowledge': {
+      id: '/app/knowledge'
+      path: '/knowledge'
+      fullPath: '/app/knowledge'
+      preLoaderRoute: typeof AppKnowledgeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/inbox': {
+      id: '/app/inbox'
+      path: '/inbox'
+      fullPath: '/app/inbox'
+      preLoaderRoute: typeof AppInboxRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/employees': {
+      id: '/app/employees'
+      path: '/employees'
+      fullPath: '/app/employees'
+      preLoaderRoute: typeof AppEmployeesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/call': {
+      id: '/app/call'
+      path: '/call'
+      fullPath: '/app/call'
+      preLoaderRoute: typeof AppCallRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/approvals': {
+      id: '/app/approvals'
+      path: '/approvals'
+      fullPath: '/app/approvals'
+      preLoaderRoute: typeof AppApprovalsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/activity': {
+      id: '/app/activity'
+      path: '/activity'
+      fullPath: '/app/activity'
+      preLoaderRoute: typeof AppActivityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/projects/$id': {
+      id: '/app/projects/$id'
+      path: '/$id'
+      fullPath: '/app/projects/$id'
+      preLoaderRoute: typeof AppProjectsIdRouteImport
+      parentRoute: typeof AppProjectsRoute
+    }
   }
 }
 
+interface AppProjectsRouteChildren {
+  AppProjectsIdRoute: typeof AppProjectsIdRoute
+}
+
+const AppProjectsRouteChildren: AppProjectsRouteChildren = {
+  AppProjectsIdRoute: AppProjectsIdRoute,
+}
+
+const AppProjectsRouteWithChildren = AppProjectsRoute._addFileChildren(
+  AppProjectsRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppActivityRoute: typeof AppActivityRoute
+  AppApprovalsRoute: typeof AppApprovalsRoute
+  AppCallRoute: typeof AppCallRoute
+  AppEmployeesRoute: typeof AppEmployeesRoute
+  AppInboxRoute: typeof AppInboxRoute
+  AppKnowledgeRoute: typeof AppKnowledgeRoute
+  AppProjectsRoute: typeof AppProjectsRouteWithChildren
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppActivityRoute: AppActivityRoute,
+  AppApprovalsRoute: AppApprovalsRoute,
+  AppCallRoute: AppCallRoute,
+  AppEmployeesRoute: AppEmployeesRoute,
+  AppInboxRoute: AppInboxRoute,
+  AppKnowledgeRoute: AppKnowledgeRoute,
+  AppProjectsRoute: AppProjectsRouteWithChildren,
+  AppSettingsRoute: AppSettingsRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface BeevrRouteChildren {
+  BeevrOnboardingRoute: typeof BeevrOnboardingRoute
+}
+
+const BeevrRouteChildren: BeevrRouteChildren = {
+  BeevrOnboardingRoute: BeevrOnboardingRoute,
+}
+
+const BeevrRouteWithChildren = BeevrRoute._addFileChildren(BeevrRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  BeevrRoute: BeevrRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
