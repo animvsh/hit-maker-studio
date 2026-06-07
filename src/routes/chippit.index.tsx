@@ -71,7 +71,7 @@ function ChippitLanding() {
             <span className="h-1.5 w-1.5 rounded-full bg-accent" /> One prompt. A full AI workspace.
           </div>
           <h1 className="mx-auto mt-6 max-w-3xl text-5xl leading-[1.05] md:text-7xl">
-            What is your <span className="italic text-muted-foreground">business?</span>
+            What do you <span className="italic text-muted-foreground">do?</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground md:text-base">
             Describe your business in plain English. Chippit will build an AI employee workspace
@@ -90,7 +90,7 @@ function ChippitLanding() {
           <textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Example: I have an agency with client calls, task follow-ups, review gates, and customer support..."
+            placeholder="What do you do? Example: I have an agency with client calls, task follow-ups, review gates, and customer support..."
             rows={4}
             className="w-full resize-none rounded-2xl bg-transparent px-4 py-3 text-base outline-none placeholder:text-muted-foreground"
           />

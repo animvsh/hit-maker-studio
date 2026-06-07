@@ -326,6 +326,9 @@ function OnboardingWorkspace() {
                 can answer questions, use your systems, and complete work with your approval.
               </p>
               <div className="mt-6 rounded-2xl border border-border bg-background p-2 shadow-inner">
+                <p className="px-4 pt-3 text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                  What you do
+                </p>
                 <input
                   value={businessIdea}
                   onChange={(event) => setBusinessIdea(event.target.value)}
@@ -925,7 +928,7 @@ function WorkingRoom() {
           onKeyDown={(event) => {
             if (event.key === "Enter") submitCommand();
           }}
-          placeholder="Ask Chippit to create, assign, or check work..."
+          placeholder="Ask Chippit to create a custom AI employee, assign work, or check progress..."
           className="min-w-0 flex-1 rounded-xl bg-background px-4 py-3 text-sm outline-none"
         />
         <button
