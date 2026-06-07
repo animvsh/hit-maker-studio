@@ -23,6 +23,7 @@ import { Route as AppCallRouteImport } from './routes/app.call'
 import { Route as AppApprovalsRouteImport } from './routes/app.approvals'
 import { Route as AppActivityRouteImport } from './routes/app.activity'
 import { Route as AppProjectsIdRouteImport } from './routes/app.projects.$id'
+import { Route as AppEmployeesEmployeeIdRouteImport } from './routes/app.employees.$employeeId'
 
 const AppRoute = AppRouteImport.update({
   id: '/app',
@@ -94,6 +95,11 @@ const AppProjectsIdRoute = AppProjectsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppProjectsRoute,
 } as any)
+const AppEmployeesEmployeeIdRoute = AppEmployeesEmployeeIdRouteImport.update({
+  id: '/$employeeId',
+  path: '/$employeeId',
+  getParentRoute: () => AppEmployeesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,7 +107,7 @@ export interface FileRoutesByFullPath {
   '/app/activity': typeof AppActivityRoute
   '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
-  '/app/employees': typeof AppEmployeesRoute
+  '/app/employees': typeof AppEmployeesRouteWithChildren
   '/app/inbox': typeof AppInboxRoute
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/chippit/onboarding': typeof ChippitOnboardingRoute
   '/app/': typeof AppIndexRoute
   '/chippit/': typeof ChippitIndexRoute
+  '/app/employees/$employeeId': typeof AppEmployeesEmployeeIdRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesByTo {
@@ -116,7 +123,7 @@ export interface FileRoutesByTo {
   '/app/activity': typeof AppActivityRoute
   '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
-  '/app/employees': typeof AppEmployeesRoute
+  '/app/employees': typeof AppEmployeesRouteWithChildren
   '/app/inbox': typeof AppInboxRoute
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/chippit/onboarding': typeof ChippitOnboardingRoute
   '/app': typeof AppIndexRoute
   '/chippit': typeof ChippitIndexRoute
+  '/app/employees/$employeeId': typeof AppEmployeesEmployeeIdRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesById {
@@ -133,7 +141,7 @@ export interface FileRoutesById {
   '/app/activity': typeof AppActivityRoute
   '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
-  '/app/employees': typeof AppEmployeesRoute
+  '/app/employees': typeof AppEmployeesRouteWithChildren
   '/app/inbox': typeof AppInboxRoute
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/chippit/onboarding': typeof ChippitOnboardingRoute
   '/app/': typeof AppIndexRoute
   '/chippit/': typeof ChippitIndexRoute
+  '/app/employees/$employeeId': typeof AppEmployeesEmployeeIdRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRouteTypes {
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/chippit/onboarding'
     | '/app/'
     | '/chippit/'
+    | '/app/employees/$employeeId'
     | '/app/projects/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/chippit/onboarding'
     | '/app'
     | '/chippit'
+    | '/app/employees/$employeeId'
     | '/app/projects/$id'
   id:
     | '__root__'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/chippit/onboarding'
     | '/app/'
     | '/chippit/'
+    | '/app/employees/$employeeId'
     | '/app/projects/$id'
   fileRoutesById: FileRoutesById
 }
@@ -300,8 +312,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdRouteImport
       parentRoute: typeof AppProjectsRoute
     }
+    '/app/employees/$employeeId': {
+      id: '/app/employees/$employeeId'
+      path: '/$employeeId'
+      fullPath: '/app/employees/$employeeId'
+      preLoaderRoute: typeof AppEmployeesEmployeeIdRouteImport
+      parentRoute: typeof AppEmployeesRoute
+    }
   }
 }
+
+interface AppEmployeesRouteChildren {
+  AppEmployeesEmployeeIdRoute: typeof AppEmployeesEmployeeIdRoute
+}
+
+const AppEmployeesRouteChildren: AppEmployeesRouteChildren = {
+  AppEmployeesEmployeeIdRoute: AppEmployeesEmployeeIdRoute,
+}
+
+const AppEmployeesRouteWithChildren = AppEmployeesRoute._addFileChildren(
+  AppEmployeesRouteChildren,
+)
 
 interface AppProjectsRouteChildren {
   AppProjectsIdRoute: typeof AppProjectsIdRoute
@@ -319,7 +350,7 @@ interface AppRouteChildren {
   AppActivityRoute: typeof AppActivityRoute
   AppApprovalsRoute: typeof AppApprovalsRoute
   AppCallRoute: typeof AppCallRoute
-  AppEmployeesRoute: typeof AppEmployeesRoute
+  AppEmployeesRoute: typeof AppEmployeesRouteWithChildren
   AppInboxRoute: typeof AppInboxRoute
   AppKnowledgeRoute: typeof AppKnowledgeRoute
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
@@ -331,7 +362,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppActivityRoute: AppActivityRoute,
   AppApprovalsRoute: AppApprovalsRoute,
   AppCallRoute: AppCallRoute,
-  AppEmployeesRoute: AppEmployeesRoute,
+  AppEmployeesRoute: AppEmployeesRouteWithChildren,
   AppInboxRoute: AppInboxRoute,
   AppKnowledgeRoute: AppKnowledgeRoute,
   AppProjectsRoute: AppProjectsRouteWithChildren,

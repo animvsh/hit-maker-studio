@@ -12,20 +12,31 @@ const autonomy = [
 ];
 
 const rules = [
-  { rule: "Client-facing messages", policy: "Approval required" },
-  { rule: "Pricing changes", policy: "Blocked" },
-  { rule: "Launch date promises", policy: "Approval required" },
+  { rule: "Customer-facing messages", policy: "Review required" },
+  { rule: "External scope promises", policy: "Review required" },
+  { rule: "Public workflow updates", policy: "Review required" },
+  { rule: "Policy-sensitive customer promises", policy: "Blocked" },
   { rule: "Internal task creation", policy: "Automatic" },
-  { rule: "Slack internal updates", policy: "Automatic" },
+  { rule: "Internal team updates", policy: "Automatic" },
 ];
 
-const tools = ["Calls", "Slack", "Gmail", "Calendar", "Docs", "CRM", "Project board"];
+const tools = [
+  "Calls",
+  "Staff chat",
+  "Email drafts",
+  "Tasks calendar",
+  "Company docs",
+  "Order FAQ",
+  "Task board",
+];
 
 function SettingsPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-8">
       <h1 className="text-3xl">Settings & Governance</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Define how AI employees are allowed to act on your behalf.</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Define how AI employees are allowed to act on your behalf.
+      </p>
 
       <section className="mt-8 rounded-2xl border border-border bg-card p-6">
         <h2 className="text-lg">Autonomy levels</h2>
@@ -40,10 +51,13 @@ function SettingsPage() {
       </section>
 
       <section className="mt-6 rounded-2xl border border-border bg-card p-6">
-        <h2 className="text-lg">Approval rules</h2>
+        <h2 className="text-lg">Review rules</h2>
         <div className="mt-4 space-y-2">
           {rules.map((r) => (
-            <div key={r.rule} className="flex items-center justify-between rounded-lg bg-background px-4 py-3 text-sm">
+            <div
+              key={r.rule}
+              className="flex items-center justify-between rounded-lg bg-background px-4 py-3 text-sm"
+            >
               <span>{r.rule}</span>
               <span className="text-xs text-muted-foreground">{r.policy}</span>
             </div>
@@ -55,7 +69,10 @@ function SettingsPage() {
         <h2 className="text-lg">Tool access</h2>
         <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2">
           {tools.map((t) => (
-            <label key={t} className="flex cursor-pointer items-center justify-between rounded-lg bg-background px-4 py-3 text-sm">
+            <label
+              key={t}
+              className="flex cursor-pointer items-center justify-between rounded-lg bg-background px-4 py-3 text-sm"
+            >
               <span>{t}</span>
               <span className="relative h-5 w-9 rounded-full bg-primary">
                 <span className="absolute right-0.5 top-0.5 h-4 w-4 rounded-full bg-primary-foreground" />

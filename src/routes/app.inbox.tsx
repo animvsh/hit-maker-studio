@@ -1,22 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Hash } from "lucide-react";
+import { getChippitDashboard } from "@/lib/api/chippit.functions";
 
 export const Route = createFileRoute("/app/inbox")({
+  loader: () => getChippitDashboard(),
   component: InboxPage,
 });
 
-const channels = ["general", "client-updates", "acme-launch", "approvals", "agent-activity"];
-
-const messages = [
-  { agent: "OpsBee", time: "2:36 PM", text: "I captured 5 action items from the Acme client call.\n\nFriday launch is possible, but currently blocked on:\n1. Sarah sending brand assets\n2. Mike approving hero copy\n\nClient recap is drafted and waiting for approval.", actions: ["View project", "Approve recap", "Assign blockers"] },
-  { agent: "PMBee", time: "2:37 PM", text: "I updated the Acme launch board. Project status changed from On Track to At Risk." },
-  { agent: "ClientBee", time: "2:38 PM", text: "I drafted a client follow-up. Approval required before sending.", actions: ["Review draft"] },
-  { agent: "QABee", time: "2:40 PM", text: "Launch checklist updated — 3 items still open." },
-];
-
 function InboxPage() {
-  const [active, setActive] = useState("acme-launch");
+  const { inboxMessages } = Route.useLoaderData();
+  const channels = Array.from(new Set(inboxMessages.map((message) => message.channel)));
+  const [active, setActive] = useState(channels[0] ?? "customer-workflows");
+  const visibleMessages = inboxMessages.filter((message) => message.channel === active);
+
   return (
     <div className="flex h-[calc(100vh-4rem)]">
       {/* Channels */}
@@ -26,7 +23,11 @@ function InboxPage() {
         </div>
         <div className="space-y-0.5 px-2">
           {channels.map((c) => (
-            <button key={c} onClick={() => setActive(c)} className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm ${active === c ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}>
+            <button
+              key={c}
+              onClick={() => setActive(c)}
+              className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm ${active === c ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+            >
               <Hash className="h-4 w-4" /> {c}
             </button>
           ))}
@@ -35,24 +36,35 @@ function InboxPage() {
 
       <main className="flex-1 overflow-auto">
         <header className="sticky top-0 z-10 border-b border-border bg-background/80 px-6 py-4 backdrop-blur">
-          <div className="flex items-center gap-2 text-lg font-medium"><Hash className="h-4 w-4" /> {active}</div>
-          <p className="text-xs text-muted-foreground">AI employees post updates here in real time.</p>
+          <div className="flex items-center gap-2 text-lg font-medium">
+            <Hash className="h-4 w-4" /> {active}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            AI employees post updates here in real time.
+          </p>
         </header>
 
         <div className="space-y-5 p-6">
-          {messages.map((m, i) => (
-            <div key={i} className="flex gap-3">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-accent text-accent-foreground text-sm font-semibold">{m.agent[0]}</div>
+          {visibleMessages.map((m) => (
+            <div key={m.id} className="flex gap-3">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-accent text-accent-foreground text-sm font-semibold">
+                {m.agent[0]}
+              </div>
               <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                   <p className="font-medium">{m.agent}</p>
-                  <span className="text-xs text-muted-foreground">{m.time}</span>
+                  <span className="text-xs text-muted-foreground">{m.time_label}</span>
                 </div>
-                <p className="mt-1 whitespace-pre-line text-sm">{m.text}</p>
+                <p className="mt-1 whitespace-pre-line text-sm">{m.body}</p>
                 {m.actions && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {m.actions.map((a) => (
-                      <button key={a} className="rounded-full bg-secondary px-3 py-1 text-xs font-medium hover:bg-secondary/80">{a}</button>
+                      <button
+                        key={a}
+                        className="rounded-full bg-secondary px-3 py-1 text-xs font-medium hover:bg-secondary/80"
+                      >
+                        {a}
+                      </button>
                     ))}
                   </div>
                 )}

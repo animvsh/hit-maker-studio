@@ -6,7 +6,11 @@ export const Route = createFileRoute("/chippit/")({
   head: () => ({
     meta: [
       { title: "Chippit — AI Employees for Your Business" },
-      { name: "description", content: "Describe your business. Chippit builds an AI employee workspace around your tools, context, and workflows." },
+      {
+        name: "description",
+        content:
+          "Describe your business. Chippit builds an AI employee workspace around your tools, context, and workflows.",
+      },
       { property: "og:title", content: "Chippit — AI Employees for Your Business" },
       { property: "og:description", content: "One prompt. A full AI workspace." },
     ],
@@ -15,7 +19,7 @@ export const Route = createFileRoute("/chippit/")({
 });
 
 const examples = [
-  "I run a bookstore with customer calls, events, online orders, and used-book questions.",
+  "I run an agency with client calls, project tasks, approvals, and follow-ups.",
   "I run a home services business that needs help booking jobs and following up with customers.",
   "I run a marketing agency and need AI employees for client calls, project tasks, and follow-ups.",
   "I run a SaaS company and need support, sales, and onboarding employees.",
@@ -30,7 +34,7 @@ function ChippitLanding() {
   const submit = (text: string) => {
     const v = text.trim();
     if (!v) return;
-    navigate({ to: "/chippit/onboarding", search: { q: v } as never });
+    navigate({ to: "/app", search: { idea: v } });
   };
 
   return (
@@ -44,10 +48,19 @@ function ChippitLanding() {
         </Link>
         <nav className="hidden items-center gap-8 md:flex">
           {["Product", "Use cases", "Pricing", "Docs"].map((l) => (
-            <a key={l} href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{l}</a>
+            <a
+              key={l}
+              href="#"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {l}
+            </a>
           ))}
         </nav>
-        <Link to="/app" className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition">
+        <Link
+          to="/app"
+          className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition"
+        >
           Open Workspace
         </Link>
       </header>
@@ -61,25 +74,30 @@ function ChippitLanding() {
             What is your <span className="italic text-muted-foreground">business?</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground md:text-base">
-            Describe your business in plain English. Chippit will build an AI employee workspace around your tools, context, and workflows.
+            Describe your business in plain English. Chippit will build an AI employee workspace
+            around your tools, context, and workflows.
           </p>
         </div>
 
         {/* Prompt input */}
         <form
-          onSubmit={(e) => { e.preventDefault(); submit(value); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit(value);
+          }}
           className="mt-10 rounded-3xl border border-border bg-card p-3 shadow-sm focus-within:border-primary transition"
         >
           <textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Example: I run a bookstore with events, online orders, used-book questions, and customer calls..."
+            placeholder="Example: I have an agency with client calls, task follow-ups, review gates, and customer support..."
             rows={4}
             className="w-full resize-none rounded-2xl bg-transparent px-4 py-3 text-base outline-none placeholder:text-muted-foreground"
           />
           <div className="flex items-center justify-between gap-3 px-2 pb-1 pt-2">
             <p className="text-xs text-muted-foreground">
-              Chippit will create: AI employees · Tool connections · Company memory · Workflows · Approval rules
+              Chippit will create: AI employees · Tool connections · Company memory · Workflows ·
+              Approval rules
             </p>
             <button
               type="submit"
@@ -124,7 +142,8 @@ function ChippitLanding() {
         </div>
 
         <p className="mt-8 text-center text-xs text-muted-foreground">
-          No setup needed yet. Chippit will recommend tools, employees, and approval rules after understanding your business.
+          No setup needed yet. Chippit will recommend tools, employees, and approval rules after
+          understanding your business.
         </p>
       </section>
     </div>
