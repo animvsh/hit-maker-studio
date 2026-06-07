@@ -110,6 +110,12 @@ export type ChippitCallAgentAction = {
   sort_order: number;
 };
 
+const laneStageMap = {
+  todo: { stage: "Captured", status: "Captured" },
+  progress: { stage: "In Progress", status: "Working" },
+  done: { stage: "Done", status: "Done" },
+} as const;
+
 function requireData<T>(result: { data?: T | null; error?: unknown }, label: string): T {
   if (result.error) {
     throw new Error(`${label}: ${JSON.stringify(result.error)}`);
@@ -121,6 +127,50 @@ async function selectOrdered<T>(table: string) {
   const admin = getInsforgeAdmin();
   const result = await admin.database.from(table).select().order("sort_order", { ascending: true });
   return requireData<T[]>(result, `Failed to load ${table}`);
+}
+
+function slugify(value: string) {
+  return (
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/bee$/i, "bee")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || "custombee"
+  );
+}
+
+function employeeNameFromPrompt(prompt: string) {
+  const cleaned = prompt.trim();
+  if (!cleaned) return "CustomBee";
+  const explicitBee = cleaned.match(/\b([A-Z][A-Za-z0-9]*Bee)\b/);
+  if (explicitBee?.[1]) return explicitBee[1];
+  if (/support|customer/i.test(cleaned)) return "SupportBee";
+  if (/inbox|email|message/i.test(cleaned)) return "InboxBee";
+  if (/task|project|kanban/i.test(cleaned)) return "TaskBee";
+  if (/policy|approval|review/i.test(cleaned)) return "PolicyBee";
+  const words = cleaned
+    .replace(/create|build|make|an?|ai|employee|for|team|business/gi, "")
+    .split(/\s+/)
+    .map((word) => word.replace(/[^a-z0-9]/gi, ""))
+    .filter(Boolean)
+    .slice(0, 2);
+  const base = words.length
+    ? words.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join("")
+    : "Custom";
+  return `${base}Bee`;
+}
+
+async function nextSortOrder(table: string) {
+  const rows = await selectOrdered<{ sort_order: number }>(table);
+  return rows.reduce((max, row) => Math.max(max, row.sort_order ?? 0), 0) + 1;
+}
+
+function currentTimeLabel() {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date());
 }
 
 const demoCopyReplacements: Array<[RegExp, string]> = [
@@ -265,4 +315,112 @@ export const approveChippitApproval = createServerFn({ method: "POST" })
     return sanitizeDemoData(
       requireData<ChippitApproval>(result, "Failed to approve Chippit approval"),
     );
+  });
+
+export const updateChippitTask = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      id: z.string().min(1),
+      lane: z.enum(["todo", "progress", "done"]).optional(),
+      owner: z.string().min(1).optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const admin = getInsforgeAdmin();
+    const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (data.lane) Object.assign(update, laneStageMap[data.lane]);
+    if (data.owner) update.owner = data.owner;
+
+    const result = await admin.database
+      .from("chippit_project_tasks")
+      .update(update)
+      .eq("id", data.id)
+      .select()
+      .single();
+
+    return sanitizeDemoData(requireData<ChippitTask>(result, "Failed to update Chippit task"));
+  });
+
+export const createChippitEmployee = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      name: z.string().min(1),
+      role: z.string().optional(),
+      description: z.string().optional(),
+      currentProject: z.string().optional(),
+      tools: z.array(z.string()).optional(),
+      source: z.string().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const admin = getInsforgeAdmin();
+    const baseName = employeeNameFromPrompt(data.name);
+    const idBase = slugify(baseName);
+    const id = data.source === "working-room" ? idBase : `${idBase}-${Date.now().toString(36)}`;
+    const role =
+      data.role ??
+      (baseName.toLowerCase().includes("support")
+        ? "Customer Support AI Employee"
+        : "Custom AI Employee");
+    const description =
+      data.description ??
+      `${baseName} was created from Chippit and can use company context, create tasks, draft work, and pause for review before risky actions.`;
+    const sortOrder = await nextSortOrder("chippit_ai_employees");
+
+    const employeePayload = {
+      name: baseName,
+      role,
+      description,
+      status: "Ready",
+      autonomy: "Low",
+      current_project: data.currentProject ?? "Custom workflow",
+      tools: data.tools ?? ["Knowledge Base", "Tasks", "Inbox"],
+      sort_order: sortOrder,
+      updated_at: new Date().toISOString(),
+    };
+    const existingResult = await admin.database
+      .from("chippit_ai_employees")
+      .select()
+      .eq("id", id)
+      .single();
+    const employeeResult = existingResult.data
+      ? await admin.database
+          .from("chippit_ai_employees")
+          .update(employeePayload)
+          .eq("id", id)
+          .select()
+          .single()
+      : await admin.database
+          .from("chippit_ai_employees")
+          .insert([{ id, ...employeePayload }])
+          .select()
+          .single();
+    const employee = requireData<ChippitEmployee>(employeeResult, "Failed to create employee");
+
+    const eventId = `evt-${id}-${Date.now().toString(36)}`;
+    await admin.database.from("chippit_activity_events").insert([
+      {
+        id: eventId,
+        time_label: currentTimeLabel(),
+        actor: "Chippit",
+        description: `created ${employee.name} from the ${data.source ?? "workspace"} flow.`,
+        sort_order: await nextSortOrder("chippit_activity_events"),
+      },
+    ]);
+
+    if (data.source === "working-room") {
+      await admin.database.from("chippit_inbox_messages").insert([
+        {
+          id: `msg-${id}-${Date.now().toString(36)}`,
+          channel: "customer-workflows",
+          agent: "Chippit",
+          time_label: currentTimeLabel(),
+          body: `${employee.name} is ready. Chippit connected company memory, mapped tools, created review rules, and added the employee to the workspace.`,
+          actions: ["Open employee", "Assign first task", "Review permissions"],
+          sort_order: await nextSortOrder("chippit_inbox_messages"),
+        },
+      ]);
+    }
+
+    return sanitizeDemoData(employee);
   });

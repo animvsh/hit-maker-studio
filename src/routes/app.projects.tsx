@@ -1,7 +1,12 @@
-import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouter, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Bot, GripVertical, Plus, Sparkles } from "lucide-react";
-import { ChippitTask, getChippitProjects } from "@/lib/api/chippit.functions";
+import {
+  ChippitTask,
+  createChippitEmployee,
+  getChippitProjects,
+  updateChippitTask,
+} from "@/lib/api/chippit.functions";
 
 export const Route = createFileRoute("/app/projects")({
   loader: () => getChippitProjects(),
@@ -44,6 +49,7 @@ function normalizeLane(task: ChippitTask): LaneId {
 
 function TasksBoard() {
   const { tasks } = Route.useLoaderData();
+  const router = useRouter();
   const initialTasks = useMemo(
     () =>
       tasks.map((task) => ({
@@ -56,8 +62,9 @@ function TasksBoard() {
   const [boardTasks, setBoardTasks] = useState<BoardTask[]>(initialTasks);
   const [newEmployee, setNewEmployee] = useState("");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [savingTaskId, setSavingTaskId] = useState<string | null>(null);
 
-  function moveTask(taskId: string, lane: LaneId) {
+  async function moveTask(taskId: string, lane: LaneId) {
     setBoardTasks((items) =>
       items.map((item) =>
         item.id === taskId
@@ -69,18 +76,45 @@ function TasksBoard() {
           : item,
       ),
     );
+    setSavingTaskId(taskId);
+    try {
+      await updateChippitTask({ data: { id: taskId, lane } });
+      await router.invalidate();
+    } finally {
+      setSavingTaskId(null);
+    }
   }
 
-  function assignTask(taskId: string, assignedTo: string) {
+  async function assignTask(taskId: string, assignedTo: string) {
     setBoardTasks((items) =>
       items.map((item) => (item.id === taskId ? { ...item, assignedTo, owner: assignedTo } : item)),
     );
+    setSavingTaskId(taskId);
+    try {
+      await updateChippitTask({ data: { id: taskId, owner: assignedTo } });
+      await router.invalidate();
+    } finally {
+      setSavingTaskId(null);
+    }
   }
 
-  function createEmployeeForTask(taskId: string) {
+  async function createEmployeeForTask(taskId: string) {
     const role = newEmployee.trim() || "CustomBee";
+    const employee = await createChippitEmployee({
+      data: {
+        name: role,
+        role: "Task owner AI Employee",
+        description: `${role} owns task follow-up, updates task status, and asks for review before customer-facing work.`,
+        currentProject: "Task board",
+        tools: ["Tasks", "Knowledge Base", "Inbox"],
+        source: "task-board",
+      },
+    });
+    await assignTask(taskId, employee.name);
     setBoardTasks((items) =>
-      items.map((item) => (item.id === taskId ? { ...item, assignedTo: role, owner: role } : item)),
+      items.map((item) =>
+        item.id === taskId ? { ...item, assignedTo: employee.name, owner: employee.name } : item,
+      ),
     );
     setNewEmployee("");
   }
@@ -120,7 +154,7 @@ function TasksBoard() {
               data-lane={lane.id}
               onDragOver={(event) => event.preventDefault()}
               onDrop={() => {
-                if (draggedTaskId) moveTask(draggedTaskId, lane.id);
+                if (draggedTaskId) void moveTask(draggedTaskId, lane.id);
                 setDraggedTaskId(null);
               }}
               className="min-h-[420px] rounded-3xl border border-border bg-secondary/60 p-3"
@@ -156,7 +190,7 @@ function TasksBoard() {
                     <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto]">
                       <select
                         value={task.assignedTo}
-                        onChange={(event) => assignTask(task.id, event.target.value)}
+                        onChange={(event) => void assignTask(task.id, event.target.value)}
                         className="smooth-action rounded-xl border border-border bg-background px-3 py-2 text-sm"
                       >
                         {[...new Set([task.assignedTo, ...aiEmployees])].map((employee) => (
@@ -166,7 +200,7 @@ function TasksBoard() {
                         ))}
                       </select>
                       <button
-                        onClick={() => createEmployeeForTask(task.id)}
+                        onClick={() => void createEmployeeForTask(task.id)}
                         className="smooth-action inline-flex items-center justify-center gap-2 rounded-xl bg-secondary px-3 py-2 text-sm font-medium"
                       >
                         <Plus className="h-4 w-4" />
@@ -186,6 +220,11 @@ function TasksBoard() {
                       {task.confidence && (
                         <span className="rounded-full bg-secondary px-2 py-1 text-muted-foreground">
                           {task.confidence}% confident
+                        </span>
+                      )}
+                      {savingTaskId === task.id && (
+                        <span className="rounded-full bg-secondary px-2 py-1 text-muted-foreground">
+                          Saving...
                         </span>
                       )}
                     </div>

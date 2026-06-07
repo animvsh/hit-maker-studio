@@ -1,8 +1,8 @@
-import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouter, useRouterState } from "@tanstack/react-router";
 import { StatusPill } from "@/components/chippit/AppShell";
 import { useState } from "react";
 import { CheckCircle2, Plus } from "lucide-react";
-import { getChippitDashboard } from "@/lib/api/chippit.functions";
+import { createChippitEmployee, getChippitDashboard } from "@/lib/api/chippit.functions";
 
 export const Route = createFileRoute("/app/employees")({
   loader: () => getChippitDashboard(),
@@ -17,7 +17,10 @@ function EmployeesLayout() {
 
 function EmployeesPage() {
   const { employees } = Route.useLoaderData();
+  const router = useRouter();
   const [created, setCreated] = useState(false);
+  const [newEmployeeName, setNewEmployeeName] = useState("SupportBee");
+  const [isCreating, setIsCreating] = useState(false);
   const steps = [
     "Reading Chippit workspace",
     "Parsing approval policy",
@@ -25,6 +28,28 @@ function EmployeesPage() {
     "Creating permissions",
     "Chippit AI team ready",
   ];
+
+  async function createEmployee(nameOverride?: string) {
+    const name = nameOverride?.trim() || newEmployeeName.trim() || "CustomBee";
+    setIsCreating(true);
+    try {
+      await createChippitEmployee({
+        data: {
+          name,
+          role: "Custom AI Employee",
+          description: `${name} was created in Chippit and can read company memory, create tasks, draft work, and wait for review on risky actions.`,
+          currentProject: "Custom workflow",
+          tools: ["Knowledge Base", "Tasks", "Inbox"],
+          source: "employees-page",
+        },
+      });
+      setCreated(true);
+      setNewEmployeeName("");
+      await router.invalidate();
+    } finally {
+      setIsCreating(false);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
@@ -35,12 +60,24 @@ function EmployeesPage() {
             Create, manage, and supervise the business AI employees working across the day.
           </p>
         </div>
-        <button
-          onClick={() => setCreated(true)}
-          className="smooth-action inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
-        >
-          <Plus className="h-4 w-4" /> Create AI Employee
-        </button>
+        <div className="smooth-card flex w-full max-w-md gap-2 rounded-2xl border border-border bg-card p-2 sm:w-auto">
+          <input
+            value={newEmployeeName}
+            onChange={(event) => setNewEmployeeName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") void createEmployee();
+            }}
+            placeholder="New AI employee name"
+            className="min-w-0 flex-1 rounded-xl bg-background px-3 py-2 text-sm outline-none"
+          />
+          <button
+            onClick={() => void createEmployee()}
+            disabled={isCreating}
+            className="smooth-action inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+          >
+            <Plus className="h-4 w-4" /> {isCreating ? "Creating..." : "Create"}
+          </button>
+        </div>
       </div>
 
       {created && (
@@ -100,7 +137,9 @@ function EmployeesPage() {
         ))}
 
         <button
-          onClick={() => setCreated(true)}
+          onClick={() => {
+            void createEmployee("CustomBee");
+          }}
           className="clickable-card rounded-2xl border-2 border-dashed border-border bg-card/50 p-6 text-left transition hover:border-primary"
         >
           <div className="grid h-12 w-12 place-items-center rounded-full bg-secondary">

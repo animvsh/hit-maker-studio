@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -16,11 +16,23 @@ import {
   TriangleAlert,
   Wrench,
 } from "lucide-react";
+import {
+  createChippitEmployee,
+  getChippitDashboard,
+  type ChippitActivityEvent,
+  type ChippitApproval,
+  type ChippitEmployee,
+  type ChippitInboxMessage,
+  type ChippitKnowledgeSource,
+  type ChippitProject,
+  type ChippitTask,
+} from "@/lib/api/chippit.functions";
 
 export const Route = createFileRoute("/app/")({
   validateSearch: (search) => ({
     idea: typeof search.idea === "string" ? search.idea : undefined,
   }),
+  loader: () => getChippitDashboard(),
   component: OnboardingWorkspace,
 });
 
@@ -203,6 +215,7 @@ function summarizeBusiness(idea: string) {
 
 function OnboardingWorkspace() {
   const routeIdea = Route.useSearch().idea ?? "";
+  const dashboard = Route.useLoaderData();
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>("welcome");
   const [businessIdea, setBusinessIdea] = useState(routeIdea || "I run a growing local business");
@@ -272,7 +285,7 @@ function OnboardingWorkspace() {
   }
 
   if (!isOnboarding) {
-    return <WorkingRoom />;
+    return <WorkingRoom dashboard={dashboard} />;
   }
 
   return (
@@ -758,13 +771,28 @@ function OnboardingWorkspace() {
   );
 }
 
-function WorkingRoom() {
+type WorkingRoomProps = {
+  dashboard: {
+    employees: ChippitEmployee[];
+    projects: ChippitProject[];
+    approvals: ChippitApproval[];
+    tasks: ChippitTask[];
+    inboxMessages: ChippitInboxMessage[];
+    activityEvents: ChippitActivityEvent[];
+    knowledgeSources: ChippitKnowledgeSource[];
+  };
+};
+
+function WorkingRoom({ dashboard }: WorkingRoomProps) {
+  const router = useRouter();
   const [prompt, setPrompt] = useState("");
   const [supportFlow, setSupportFlow] = useState<"idle" | "plan" | "building" | "ready" | "test">(
     "idle",
   );
   const [gmailConnected, setGmailConnected] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isPersistingSupportBee, setIsPersistingSupportBee] = useState(false);
+  const [createdEmployeeName, setCreatedEmployeeName] = useState<string | null>(null);
   const supportBeeVisible = supportFlow !== "idle" && supportFlow !== "plan";
   const supportBeeStatus =
     supportFlow === "building" ? "Connecting tools" : supportFlow === "test" ? "Testing" : "Ready";
@@ -915,6 +943,28 @@ function WorkingRoom() {
     setPrompt("");
   }
 
+  async function persistSupportBee(nextFlow: "building" | "ready" = "building") {
+    setIsPersistingSupportBee(true);
+    try {
+      const employee = await createChippitEmployee({
+        data: {
+          name: "SupportBee",
+          role: "Customer Support AI Employee",
+          description:
+            "SupportBee answers customer support questions, drafts replies, creates support tasks, summarizes conversations, and pauses for review before customer-facing actions.",
+          currentProject: "Customer support workflow",
+          tools: ["Gmail", "Slack", "Knowledge Base", "Calls", "Tasks"],
+          source: "working-room",
+        },
+      });
+      setCreatedEmployeeName(employee.name);
+      setSupportFlow(nextFlow);
+      await router.invalidate();
+    } finally {
+      setIsPersistingSupportBee(false);
+    }
+  }
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -1032,10 +1082,11 @@ function WorkingRoom() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => setSupportFlow("building")}
-                className="smooth-action rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+                onClick={() => void persistSupportBee("building")}
+                disabled={isPersistingSupportBee}
+                className="smooth-action rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
               >
-                Create SupportBee
+                {isPersistingSupportBee ? "Creating..." : "Create SupportBee"}
               </button>
               <button className="smooth-action rounded-full bg-secondary px-4 py-2 text-sm font-medium">
                 Edit plan
@@ -1220,6 +1271,12 @@ function WorkingRoom() {
                     <span className="text-muted-foreground">{step}</span>
                   </div>
                 ))}
+                {createdEmployeeName && (
+                  <div className="rounded-xl bg-accent/10 p-3 text-sm text-primary">
+                    {createdEmployeeName} was saved to the Chippit backend and will stay available
+                    after refresh.
+                  </div>
+                )}
               </div>
             </div>
             <div className="rounded-xl bg-background/70 p-4">
@@ -1271,10 +1328,11 @@ function WorkingRoom() {
           </div>
           {supportFlow === "building" && (
             <button
-              onClick={() => setSupportFlow("ready")}
-              className="smooth-action mt-4 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+              onClick={() => void persistSupportBee("ready")}
+              disabled={isPersistingSupportBee}
+              className="smooth-action mt-4 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
             >
-              Finish setup
+              {isPersistingSupportBee ? "Saving..." : "Finish setup"}
             </button>
           )}
           {supportFlow === "test" && (
@@ -1321,6 +1379,17 @@ function WorkingRoom() {
       <div className="mt-5 grid grid-cols-1 gap-4 xl:grid-cols-[1.1fr_0.9fr_0.9fr]">
         <Panel title="Live logs">
           <div className="space-y-2">
+            {dashboard.activityEvents.slice(-4).map((event) => (
+              <div
+                key={event.id}
+                className="smooth-pop flex items-center gap-3 rounded-xl bg-background/70 p-3 text-sm"
+              >
+                <span className="mr-2 inline-block h-2 w-2 rounded-full bg-primary" />
+                <span>
+                  {event.actor} {event.description}
+                </span>
+              </div>
+            ))}
             {liveLogs.map((log) => (
               <div
                 key={log}
