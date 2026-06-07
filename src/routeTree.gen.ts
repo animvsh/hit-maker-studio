@@ -9,9 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as BeevrRouteImport } from './routes/beevr'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BeevrIndexRouteImport } from './routes/beevr.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as BeevrOnboardingRouteImport } from './routes/beevr.onboarding'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
@@ -24,11 +24,6 @@ import { Route as AppApprovalsRouteImport } from './routes/app.approvals'
 import { Route as AppActivityRouteImport } from './routes/app.activity'
 import { Route as AppProjectsIdRouteImport } from './routes/app.projects.$id'
 
-const BeevrRoute = BeevrRouteImport.update({
-  id: '/beevr',
-  path: '/beevr',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -39,15 +34,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BeevrIndexRoute = BeevrIndexRouteImport.update({
+  id: '/beevr/',
+  path: '/beevr/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
 const BeevrOnboardingRoute = BeevrOnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => BeevrRoute,
+  id: '/beevr/onboarding',
+  path: '/beevr/onboarding',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
@@ -98,7 +98,6 @@ const AppProjectsIdRoute = AppProjectsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/beevr': typeof BeevrRouteWithChildren
   '/app/activity': typeof AppActivityRoute
   '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
@@ -109,11 +108,11 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/beevr/onboarding': typeof BeevrOnboardingRoute
   '/app/': typeof AppIndexRoute
+  '/beevr/': typeof BeevrIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/beevr': typeof BeevrRouteWithChildren
   '/app/activity': typeof AppActivityRoute
   '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
@@ -124,13 +123,13 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/beevr/onboarding': typeof BeevrOnboardingRoute
   '/app': typeof AppIndexRoute
+  '/beevr': typeof BeevrIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/beevr': typeof BeevrRouteWithChildren
   '/app/activity': typeof AppActivityRoute
   '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
@@ -141,6 +140,7 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/beevr/onboarding': typeof BeevrOnboardingRoute
   '/app/': typeof AppIndexRoute
+  '/beevr/': typeof BeevrIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRouteTypes {
@@ -148,7 +148,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
-    | '/beevr'
     | '/app/activity'
     | '/app/approvals'
     | '/app/call'
@@ -159,11 +158,11 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/beevr/onboarding'
     | '/app/'
+    | '/beevr/'
     | '/app/projects/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/beevr'
     | '/app/activity'
     | '/app/approvals'
     | '/app/call'
@@ -174,12 +173,12 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/beevr/onboarding'
     | '/app'
+    | '/beevr'
     | '/app/projects/$id'
   id:
     | '__root__'
     | '/'
     | '/app'
-    | '/beevr'
     | '/app/activity'
     | '/app/approvals'
     | '/app/call'
@@ -190,24 +189,19 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/beevr/onboarding'
     | '/app/'
+    | '/beevr/'
     | '/app/projects/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  BeevrRoute: typeof BeevrRouteWithChildren
+  BeevrOnboardingRoute: typeof BeevrOnboardingRoute
+  BeevrIndexRoute: typeof BeevrIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/beevr': {
-      id: '/beevr'
-      path: '/beevr'
-      fullPath: '/beevr'
-      preLoaderRoute: typeof BeevrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/app': {
       id: '/app'
       path: '/app'
@@ -222,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/beevr/': {
+      id: '/beevr/'
+      path: '/beevr'
+      fullPath: '/beevr/'
+      preLoaderRoute: typeof BeevrIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/': {
       id: '/app/'
       path: '/'
@@ -231,10 +232,10 @@ declare module '@tanstack/react-router' {
     }
     '/beevr/onboarding': {
       id: '/beevr/onboarding'
-      path: '/onboarding'
+      path: '/beevr/onboarding'
       fullPath: '/beevr/onboarding'
       preLoaderRoute: typeof BeevrOnboardingRouteImport
-      parentRoute: typeof BeevrRoute
+      parentRoute: typeof rootRouteImport
     }
     '/app/settings': {
       id: '/app/settings'
@@ -340,21 +341,22 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
-interface BeevrRouteChildren {
-  BeevrOnboardingRoute: typeof BeevrOnboardingRoute
-}
-
-const BeevrRouteChildren: BeevrRouteChildren = {
-  BeevrOnboardingRoute: BeevrOnboardingRoute,
-}
-
-const BeevrRouteWithChildren = BeevrRoute._addFileChildren(BeevrRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  BeevrRoute: BeevrRouteWithChildren,
+  BeevrOnboardingRoute: BeevrOnboardingRoute,
+  BeevrIndexRoute: BeevrIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
