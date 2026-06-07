@@ -6,7 +6,14 @@ import {
 import { type ReactNode } from "react";
 import { BeevrLogo } from "./BeevrLogo";
 
-const nav = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutGrid;
+  live?: boolean;
+  badge?: number;
+};
+const nav: NavItem[] = [
   { to: "/app", label: "Command Center", icon: LayoutGrid },
   { to: "/app/employees", label: "AI Employees", icon: Users },
   { to: "/app/projects", label: "Projects", icon: FolderKanban },
@@ -16,7 +23,7 @@ const nav = [
   { to: "/app/activity", label: "Activity Logs", icon: ScrollText },
   { to: "/app/knowledge", label: "Knowledge Base", icon: BookOpen },
   { to: "/app/settings", label: "Settings", icon: Settings },
-] as const;
+];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
