@@ -20,7 +20,6 @@ import { Route as AppKnowledgeRouteImport } from './routes/app.knowledge'
 import { Route as AppInboxRouteImport } from './routes/app.inbox'
 import { Route as AppEmployeesRouteImport } from './routes/app.employees'
 import { Route as AppCallRouteImport } from './routes/app.call'
-import { Route as AppApprovalsRouteImport } from './routes/app.approvals'
 import { Route as AppActivityRouteImport } from './routes/app.activity'
 import { Route as AppProjectsIdRouteImport } from './routes/app.projects.$id'
 import { Route as AppEmployeesEmployeeIdRouteImport } from './routes/app.employees.$employeeId'
@@ -80,11 +79,6 @@ const AppCallRoute = AppCallRouteImport.update({
   path: '/call',
   getParentRoute: () => AppRoute,
 } as any)
-const AppApprovalsRoute = AppApprovalsRouteImport.update({
-  id: '/approvals',
-  path: '/approvals',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppActivityRoute = AppActivityRouteImport.update({
   id: '/activity',
   path: '/activity',
@@ -105,7 +99,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/app/activity': typeof AppActivityRoute
-  '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
   '/app/employees': typeof AppEmployeesRouteWithChildren
   '/app/inbox': typeof AppInboxRoute
@@ -121,7 +114,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app/activity': typeof AppActivityRoute
-  '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
   '/app/employees': typeof AppEmployeesRouteWithChildren
   '/app/inbox': typeof AppInboxRoute
@@ -139,7 +131,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/app/activity': typeof AppActivityRoute
-  '/app/approvals': typeof AppApprovalsRoute
   '/app/call': typeof AppCallRoute
   '/app/employees': typeof AppEmployeesRouteWithChildren
   '/app/inbox': typeof AppInboxRoute
@@ -158,7 +149,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/app/activity'
-    | '/app/approvals'
     | '/app/call'
     | '/app/employees'
     | '/app/inbox'
@@ -174,7 +164,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/app/activity'
-    | '/app/approvals'
     | '/app/call'
     | '/app/employees'
     | '/app/inbox'
@@ -191,7 +180,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/app/activity'
-    | '/app/approvals'
     | '/app/call'
     | '/app/employees'
     | '/app/inbox'
@@ -291,13 +279,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCallRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/approvals': {
-      id: '/app/approvals'
-      path: '/approvals'
-      fullPath: '/app/approvals'
-      preLoaderRoute: typeof AppApprovalsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/activity': {
       id: '/app/activity'
       path: '/activity'
@@ -348,7 +329,6 @@ const AppProjectsRouteWithChildren = AppProjectsRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppActivityRoute: typeof AppActivityRoute
-  AppApprovalsRoute: typeof AppApprovalsRoute
   AppCallRoute: typeof AppCallRoute
   AppEmployeesRoute: typeof AppEmployeesRouteWithChildren
   AppInboxRoute: typeof AppInboxRoute
@@ -360,7 +340,6 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppActivityRoute: AppActivityRoute,
-  AppApprovalsRoute: AppApprovalsRoute,
   AppCallRoute: AppCallRoute,
   AppEmployeesRoute: AppEmployeesRouteWithChildren,
   AppInboxRoute: AppInboxRoute,
