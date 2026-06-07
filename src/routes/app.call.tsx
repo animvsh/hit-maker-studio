@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Mic, Square } from "lucide-react";
-import { StatusPill } from "@/components/beevr/AppShell";
+import { StatusPill } from "@/components/chippit/AppShell";
 
 export const Route = createFileRoute("/app/call")({
   component: LiveCall,

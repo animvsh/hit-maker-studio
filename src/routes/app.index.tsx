@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { employees, projects, approvals, StatusPill } from "@/components/beevr/AppShell";
+import { employees, projects, approvals, StatusPill } from "@/components/chippit/AppShell";
 import { TrendingUp, AlertTriangle, Clock, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/app/")({

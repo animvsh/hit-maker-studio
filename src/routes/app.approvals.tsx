@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { approvals, StatusPill } from "@/components/beevr/AppShell";
+import { approvals, StatusPill } from "@/components/chippit/AppShell";
 import { X, Check, Edit3 } from "lucide-react";
 
 export const Route = createFileRoute("/app/approvals")({

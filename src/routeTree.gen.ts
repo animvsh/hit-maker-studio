@@ -11,9 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BeevrIndexRouteImport } from './routes/beevr.index'
+import { Route as ChippitIndexRouteImport } from './routes/chippit.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as BeevrOnboardingRouteImport } from './routes/beevr.onboarding'
+import { Route as ChippitOnboardingRouteImport } from './routes/chippit.onboarding'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppProjectsRouteImport } from './routes/app.projects'
 import { Route as AppKnowledgeRouteImport } from './routes/app.knowledge'
@@ -34,9 +34,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BeevrIndexRoute = BeevrIndexRouteImport.update({
-  id: '/beevr/',
-  path: '/beevr/',
+const ChippitIndexRoute = ChippitIndexRouteImport.update({
+  id: '/chippit/',
+  path: '/chippit/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -44,9 +44,9 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const BeevrOnboardingRoute = BeevrOnboardingRouteImport.update({
-  id: '/beevr/onboarding',
-  path: '/beevr/onboarding',
+const ChippitOnboardingRoute = ChippitOnboardingRouteImport.update({
+  id: '/chippit/onboarding',
+  path: '/chippit/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
@@ -106,9 +106,9 @@ export interface FileRoutesByFullPath {
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
   '/app/settings': typeof AppSettingsRoute
-  '/beevr/onboarding': typeof BeevrOnboardingRoute
+  '/chippit/onboarding': typeof ChippitOnboardingRoute
   '/app/': typeof AppIndexRoute
-  '/beevr/': typeof BeevrIndexRoute
+  '/chippit/': typeof ChippitIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesByTo {
@@ -121,9 +121,9 @@ export interface FileRoutesByTo {
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
   '/app/settings': typeof AppSettingsRoute
-  '/beevr/onboarding': typeof BeevrOnboardingRoute
+  '/chippit/onboarding': typeof ChippitOnboardingRoute
   '/app': typeof AppIndexRoute
-  '/beevr': typeof BeevrIndexRoute
+  '/chippit': typeof ChippitIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRoutesById {
@@ -138,9 +138,9 @@ export interface FileRoutesById {
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
   '/app/settings': typeof AppSettingsRoute
-  '/beevr/onboarding': typeof BeevrOnboardingRoute
+  '/chippit/onboarding': typeof ChippitOnboardingRoute
   '/app/': typeof AppIndexRoute
-  '/beevr/': typeof BeevrIndexRoute
+  '/chippit/': typeof ChippitIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
 }
 export interface FileRouteTypes {
@@ -156,9 +156,9 @@ export interface FileRouteTypes {
     | '/app/knowledge'
     | '/app/projects'
     | '/app/settings'
-    | '/beevr/onboarding'
+    | '/chippit/onboarding'
     | '/app/'
-    | '/beevr/'
+    | '/chippit/'
     | '/app/projects/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -171,9 +171,9 @@ export interface FileRouteTypes {
     | '/app/knowledge'
     | '/app/projects'
     | '/app/settings'
-    | '/beevr/onboarding'
+    | '/chippit/onboarding'
     | '/app'
-    | '/beevr'
+    | '/chippit'
     | '/app/projects/$id'
   id:
     | '__root__'
@@ -187,17 +187,17 @@ export interface FileRouteTypes {
     | '/app/knowledge'
     | '/app/projects'
     | '/app/settings'
-    | '/beevr/onboarding'
+    | '/chippit/onboarding'
     | '/app/'
-    | '/beevr/'
+    | '/chippit/'
     | '/app/projects/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  BeevrOnboardingRoute: typeof BeevrOnboardingRoute
-  BeevrIndexRoute: typeof BeevrIndexRoute
+  ChippitOnboardingRoute: typeof ChippitOnboardingRoute
+  ChippitIndexRoute: typeof ChippitIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -216,11 +216,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/beevr/': {
-      id: '/beevr/'
-      path: '/beevr'
-      fullPath: '/beevr/'
-      preLoaderRoute: typeof BeevrIndexRouteImport
+    '/chippit/': {
+      id: '/chippit/'
+      path: '/chippit'
+      fullPath: '/chippit/'
+      preLoaderRoute: typeof ChippitIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -230,11 +230,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/beevr/onboarding': {
-      id: '/beevr/onboarding'
-      path: '/beevr/onboarding'
-      fullPath: '/beevr/onboarding'
-      preLoaderRoute: typeof BeevrOnboardingRouteImport
+    '/chippit/onboarding': {
+      id: '/chippit/onboarding'
+      path: '/chippit/onboarding'
+      fullPath: '/chippit/onboarding'
+      preLoaderRoute: typeof ChippitOnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/settings': {
@@ -344,8 +344,8 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  BeevrOnboardingRoute: BeevrOnboardingRoute,
-  BeevrIndexRoute: BeevrIndexRoute,
+  ChippitOnboardingRoute: ChippitOnboardingRoute,
+  ChippitIndexRoute: ChippitIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

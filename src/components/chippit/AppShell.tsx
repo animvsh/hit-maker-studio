@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-lg font-semibold tracking-tight">Beevr</span>
+          <span className="text-lg font-semibold tracking-tight">Chippit</span>
         </div>
         <nav className="flex-1 space-y-0.5 px-3 py-2">
           {nav.map((n) => {
@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="flex h-16 items-center gap-3 border-b border-border bg-card px-6">
           <div className="flex flex-1 items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
             <Search className="h-4 w-4" />
-            <span className="truncate">Ask Beevr anything… "What's blocked?" "Create a client follow-up" "Summarize today's calls"</span>
+            <span className="truncate">Ask Chippit anything… "What's blocked?" "Create a client follow-up" "Summarize today's calls"</span>
           </div>
           <Link to="/app/employees" className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium hover:bg-secondary/80 transition">
             <Plus className="h-4 w-4" /> New AI Employee
