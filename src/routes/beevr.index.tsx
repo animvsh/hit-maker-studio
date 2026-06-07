@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowUpRight, Sparkles, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/beevr")({
+export const Route = createFileRoute("/beevr/")({
   head: () => ({
     meta: [
       { title: "Chippit — AI Employees for Your Business" },
