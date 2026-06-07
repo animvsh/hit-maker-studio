@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { StatusPill } from "@/components/beevr/AppShell";
+import { StatusPill } from "@/components/chippit/AppShell";
 import { PhoneCall, Sparkles, FileText, CheckSquare } from "lucide-react";
 
 export const Route = createFileRoute("/app/projects/$id")({

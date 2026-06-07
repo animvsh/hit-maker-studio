@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowUpRight, Sparkles, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/beevr/")({
+export const Route = createFileRoute("/chippit/")({
   head: () => ({
     meta: [
       { title: "Chippit — AI Employees for Your Business" },
@@ -30,13 +30,13 @@ function ChippitLanding() {
   const submit = (text: string) => {
     const v = text.trim();
     if (!v) return;
-    navigate({ to: "/beevr/onboarding", search: { q: v } as never });
+    navigate({ to: "/chippit/onboarding", search: { q: v } as never });
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-        <Link to="/beevr" className="flex items-center gap-2">
+        <Link to="/chippit" className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground">
             <Sparkles className="h-4 w-4" />
           </div>

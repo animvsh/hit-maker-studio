@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { StatusPill } from "@/components/beevr/AppShell";
+import { StatusPill } from "@/components/chippit/AppShell";
 
 export const Route = createFileRoute("/app/projects")({
   component: ProjectsLayout,

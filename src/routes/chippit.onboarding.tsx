@@ -4,7 +4,7 @@ import { ArrowRight, Check, Sparkles, Loader2, CheckCircle2, Mail, MessageSquare
 
 type Search = { q?: string };
 
-export const Route = createFileRoute("/beevr/onboarding")({
+export const Route = createFileRoute("/chippit/onboarding")({
   validateSearch: (s: Record<string, unknown>): Search => ({ q: typeof s.q === "string" ? s.q : undefined }),
   head: () => ({ meta: [{ title: "Setting up — Chippit" }] }),
   component: Onboarding,
@@ -21,7 +21,7 @@ function Onboarding() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link to="/beevr" className="flex items-center gap-2">
+        <Link to="/chippit" className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground">
             <Sparkles className="h-4 w-4" />
           </div>
